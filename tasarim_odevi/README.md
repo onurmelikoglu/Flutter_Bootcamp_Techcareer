@@ -1,16 +1,12 @@
-# tasarim_odevi
+# Tasarim_Odevi
 
 A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+<img src="https://github.com/onurmelikoglu/Flutter_Bootcamp_Techcareer/assets/60974044/880fd114-0bd1-4671-b5c9-009778d2558e" width="400">
+<img src="https://github.com/onurmelikoglu/Flutter_Bootcamp_Techcareer/assets/60974044/738b0b75-26ad-444d-a7c1-2591f8072ccc" width="400">
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
