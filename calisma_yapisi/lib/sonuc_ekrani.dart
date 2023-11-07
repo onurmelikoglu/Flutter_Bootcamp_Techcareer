@@ -18,13 +18,13 @@ class _SonucEkraniState extends State<SonucEkrani> {
           children: [
             ElevatedButton(
                 onPressed: (){
-
+                  Navigator.pop(context);
                 },
                 child: const Text("Geri Dön")
             ),
             ElevatedButton(
                 onPressed: (){
-
+                  Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 child: const Text("Anasayfaya Geri Dön")
             ),
