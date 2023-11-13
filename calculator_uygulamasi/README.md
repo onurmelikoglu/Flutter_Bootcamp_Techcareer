@@ -1,6 +1,6 @@
 # Calculator App
 
-In this study, I designed a calculator interface with sum operation and clearing functions.
+I have created a calculator application interface for this study that simply has functions for adding up and cleaning the screen.
 
 ## Preview
 
