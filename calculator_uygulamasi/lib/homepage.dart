@@ -17,35 +17,43 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> onButtonClick(value) async{
 
-    if(double.tryParse(value) == null){
-      if(value == "+" || value == "."){
+    if(double.tryParse(value) == null){ // basılan tuş numeric değil ise
+      if(value == "+" || value == "."){ // işlem operasyon tuşu
         setState(() {
           displayedOperation.add(value);
         });
-      }else if(value == "="){
+      }else if(value == "="){ // işlem sonuç tuşu
         setState(() {
+
           calculatedOperation.clear();
           newOperation = displayedOperation.join().split("+");
+
           for(var i=0; i<newOperation.length; i++){
             calculatedOperation.add(double.parse(newOperation[i]));
           }
-          print(calculatedOperation);
+
           sum = calculatedOperation.reduce((a, b) => a + b);
 
           if(sum % 1 == 0){ // sum int ise ekranda .0 yazmasını engeller
             result = sum.toInt().toString();
-          }else{ // double ise noktadan sonrasını görmeliyiz
+          }else{ // double ise her türlü noktadan sonrasını görmeliyiz
             result = sum.toString();
           }
 
+          // ekrana sığmayan sonucu üslü ifade olarak yazdırıyoruz
+          if(double.parse(result) > 99999999999){
+            // Exponential (3) : decimalden sonra gösterilecek basamak sayısı
+            result = double.parse(result).toStringAsExponential(3);
+          }
+
         });
-      }else if(value == "AC"){
+      }else if(value == "AC"){ // ekranı temizleme tuşu
         setState(() {
           displayedOperation.clear();
           result = "0";
         });
       }
-    } else {
+    } else { // basılan tuş numeric ise
        setState(() {
          displayedOperation.add(value);
        });
@@ -55,9 +63,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
 
-    var screenInfo = MediaQuery.of(context);
-    var screenWidth = screenInfo.size.width;
-    var screenHeight = screenInfo.size.height;
+    var screenInfo = MediaQuery.of(context); // ekran bilgisi
+    var screenHeight = screenInfo.size.height; // cihaz ekran boyu
 
     //print(screenHeight);
     return Scaffold(
@@ -65,7 +72,7 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.only(left: 10, right: 10),
         child: Column(
           children: [
-            Container(
+            SizedBox(
                 height: screenHeight/3.5,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -73,20 +80,28 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(displayedOperation.isNotEmpty ?"=":"", style: TextStyle(fontSize: 30,color: Colors.grey),),
-                        Flexible(child: Text(displayedOperation.join(), style: TextStyle(fontSize: 30,color: Colors.grey,),maxLines: 2,))
+                        Text(
+                          displayedOperation.isNotEmpty ?"=":"",
+                          style: const TextStyle(fontSize: 30,color: Colors.grey),
+                        ),
+                        Flexible(
+                             child: Text(
+                             displayedOperation.join(),
+                             style: const TextStyle(fontSize: 30,color: Colors.grey,height: 1),
+                             maxLines: 2,)
+                        )
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text(result, style: TextStyle(fontSize: 60),)
+                        Text(result, style: const TextStyle(fontSize: 60))
                       ],
                     ),
                   ],
                 )
             ),
-            Container(
+            SizedBox(
               height: screenHeight/1.52,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -138,7 +153,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-
           ],
         ),
       ),
