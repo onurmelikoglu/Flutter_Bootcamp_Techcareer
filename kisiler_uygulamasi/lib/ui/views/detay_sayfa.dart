@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kisiler_uygulamasi/data/entity/kisiler.dart';
+import 'package:kisiler_uygulamasi/ui/cubit/detay_sayfa_cubit.dart';
 
 class DetaySayfa extends StatefulWidget {
 
@@ -48,7 +50,7 @@ class _DetaySayfaState extends State<DetaySayfa> {
                 decoration: const InputDecoration(hintText: "Kişi Tel"),
               ),
               ElevatedButton(onPressed: (){
-                guncelle(widget.kisi.kisi_id, tfKisiAdi.text, tfKisiTel.text);
+                context.read<DetaySayfaCubit>().guncelle(widget.kisi.kisi_id, tfKisiAdi.text, tfKisiTel.text);
               }, child: const Text("Güncelle")),
             ],
           ),

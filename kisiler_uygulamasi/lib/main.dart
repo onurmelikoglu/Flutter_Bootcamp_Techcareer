@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kisiler_uygulamasi/ui/cubit/anasayfa_cubit.dart';
+import 'package:kisiler_uygulamasi/ui/cubit/detay_sayfa_cubit.dart';
 import 'package:kisiler_uygulamasi/ui/cubit/kayit_sayfa_cubit.dart';
 import 'package:kisiler_uygulamasi/ui/views/anasayfa.dart';
 
@@ -16,6 +18,8 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => KayitSayfaCubit()),
+        BlocProvider(create: (context) => DetaySayfaCubit()),
+        BlocProvider(create: (context) => AnasayfaCubit()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
