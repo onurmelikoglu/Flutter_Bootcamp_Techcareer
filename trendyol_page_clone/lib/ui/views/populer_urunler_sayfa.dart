@@ -37,6 +37,7 @@ class _PopulerUrunlerSayfaState extends State<PopulerUrunlerSayfa> {
   }
   
   Future<List<Urunler>> urunleriYukle() async{
+    //urunlerListesi = <Urunler>[];
     var urunlerListesi = <Urunler>[];
 
     var kategorilerListesi = await kategorileriYukle();
@@ -75,6 +76,19 @@ class _PopulerUrunlerSayfaState extends State<PopulerUrunlerSayfa> {
 
   Future<void> urunFiltrele(int kategori_id) async{
 
+    var urunlerListesi = await urunleriYukle();
+
+    setState(() {
+      urunlerListesi.where((element)=> element.kategori.id == kategori_id ).toList();
+    });
+
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    urunleriYukle();
   }
   
   
@@ -84,53 +98,47 @@ class _PopulerUrunlerSayfaState extends State<PopulerUrunlerSayfa> {
     var screenHeight = screenInfo.size.height;
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.white,
         title: const Text("Senin İçin Seçtik"),
         leading: const Icon(Icons.arrow_back_rounded),
       ),
       body: Container(
         color: Colors.grey.shade100,
-        child: Column(
+        child: ListView(
           children: [
             FutureBuilder<List<Kategoriler>>(
               future: kategorileriYukle(),
               builder: (context, snapshot){
               if(snapshot.hasData){
                 var kategoriListesi = snapshot.data;
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: screenHeight * (10/100),
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: kategoriListesi!.length,
-                          itemBuilder: (context, index){
-                            var kategori = kategoriListesi[index];
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ChoiceChip(
-                                backgroundColor: Colors.white,
-                                padding: const EdgeInsets.only(bottom: 0.1),
-                                label: smallTxt(txt: kategori.name, fontsize: 12, fontweight: FontWeight.bold, color: seciliKategori == index ? Colors.orange : Colors.grey),
-                                //labelStyle: TextStyle( color: seciliKategori == index ? Colors.orange : Colors.grey),
-                                side: BorderSide(color: seciliKategori == index ? Colors.orange : Colors.grey.shade300),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                selected: seciliKategori == index,
-                                showCheckmark: false,
-                                selectedColor: Colors.white,
-                                onSelected: (bool selected) {
-                                  setState(() {
-                                    print("Secili item: $index");
-                                    seciliKategori = selected ? index : null;
-                                    //urunlerListesi
-                                  });
-                                },
-                              ),
-                            );;
+                return Container(
+                  height: screenHeight * 10/100,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: kategoriListesi!.length,
+                    itemBuilder: (context, index){
+                      var kategori = kategoriListesi[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ChoiceChip(
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.only(bottom: 0.1),
+                          label: smallTxt(txt: kategori.name, fontsize: 12, fontweight: FontWeight.bold, color: seciliKategori == index ? Colors.orange : Colors.grey),
+                          //labelStyle: TextStyle( color: seciliKategori == index ? Colors.orange : Colors.grey),
+                          side: BorderSide(color: seciliKategori == index ? Colors.orange : Colors.grey.shade300),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          selected: seciliKategori == index,
+                          showCheckmark: false,
+                          selectedColor: Colors.white,
+                          onSelected: (bool selected) {
+                            print("Secili item: $index");
+                            seciliKategori = selected ? index : null;
+                            urunFiltrele(index+1);
                           },
                         ),
-                      )
-                    ],
+                      );;
+                    },
                   ),
                 );
               }else{
@@ -139,130 +147,127 @@ class _PopulerUrunlerSayfaState extends State<PopulerUrunlerSayfa> {
             },
           ),
             FutureBuilder<List<Urunler>>(
-                future: urunleriYukle(),
-                builder: (context, snapshot){
-                  if(snapshot.hasData){
-                    var urunlerListesi = snapshot.data;
-                    return SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: screenHeight * (70/100),
-                            child: GridView.builder(
-                              scrollDirection: Axis.vertical,
-                              itemCount: urunlerListesi!.length,
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 1 / 2.22,
+              future: urunleriYukle(),
+              builder: (context, snapshot){
+                if(snapshot.hasData){
+                  var urunlerListesi = snapshot.data;
+                  return GridView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    itemCount: urunlerListesi!.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1 / 2.22,
 
-                              ),
-                              itemBuilder: (context,index){
-                                var urun = urunlerListesi[index];
-                                return Card(
-                                  color: Colors.white,
-                                  surfaceTintColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  child: Column(
-                                    //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      //Image.asset("images/${urun.image}"),
-                                      Stack(
+                    ),
+                    itemBuilder: (context,index){
+                      var urun = urunlerListesi[index];
+                      return Card(
+                        color: Colors.white,
+                        surfaceTintColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Column(
+                          //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            //Image.asset("images/${urun.image}"),
+                            Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
+                                  child: Image.asset("images/${urun.image}"),
+                                ),
+                                Positioned(
+                                  left: 5,
+                                  top: 5,
+                                  child: Visibility(
+                                      visible: urun.banner != "",
+                                      child: Image.asset("images/${urun.banner}", height: 50, width: 50,)),
+                                ),
+                                Positioned(
+                                    top:5,
+                                    right:5,
+                                    child: Card(
+                                      color: Colors.white,
+                                      surfaceTintColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(50.0),
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(4.0),
+                                        child: Icon(Icons.favorite_outline, size: 20,),
+                                      ),
+                                    )
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 5,),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10, right: 10),
+                              child: SizedBox(
+                                height: screenHeight * (20/100),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text.rich(
+                                      TextSpan(
                                         children: [
-                                            ClipRRect(
-                                              borderRadius: const BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
-                                              child: Image.asset("images/${urun.image}"),
-                                            ),
-                                          Positioned(
-                                            left: 5,
-                                            top: 5,
-                                            child: Visibility(
-                                                visible: urun.banner != "",
-                                                child: Image.asset("images/${urun.banner}", height: 50, width: 50,)),
-                                          ),
-                                          Positioned(
-                                              top:5,
-                                              right:5,
-                                              child: Card(
-                                                color: Colors.white,
-                                                surfaceTintColor: Colors.white,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(50.0),
-                                                ),
-                                                child: const Padding(
-                                                  padding: EdgeInsets.all(4.0),
-                                                  child: Icon(Icons.favorite_outline, size: 20,),
-                                                ),
-                                              )
-                                          )
+                                          TextSpan(text: "${urun.brandName} ",style: const TextStyle(fontSize:12,fontFamily: "SourceSans",fontWeight: FontWeight.bold),),
+                                          TextSpan( text: urun.name,style: TextStyle(fontSize:12, color: Colors.grey.shade600, fontFamily: "SourceSans",) )
                                         ],
                                       ),
-                                      const SizedBox(height: 5,),
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 10, right: 10),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text.rich(
-                                              TextSpan(
-                                                children: [
-                                                  TextSpan(text: "${urun.brandName} ",style: const TextStyle(fontSize:12,fontFamily: "SourceSans",fontWeight: FontWeight.bold),),
-                                                  TextSpan( text: urun.name,style: TextStyle(fontSize:12, color: Colors.grey.shade600, fontFamily: "SourceSans",) )
-                                                ],
-                                              ),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            const SizedBox(height: 2,),
-                                            Row(
-                                              children: [
-                                                RatingBar.builder(
-                                                  initialRating: urun.rating,
-                                                  minRating: 1,
-                                                  direction: Axis.horizontal,
-                                                  allowHalfRating: true,
-                                                  itemCount: 5,
-                                                  itemPadding: const EdgeInsets.only(left: 1, right: 1),
-                                                  itemSize: 16,
-                                                  itemBuilder: (context, index) => const Icon( Icons.star, color: Colors.amber,size: 10,),
-                                                  onRatingUpdate: (rating) {
-                                                    // print(rating);
-                                                  },
-                                                ),
-                                                smallTxt(txt: " (${urun.evaluation})", fontsize: 12, color: Colors.grey.shade700)
-                                              ],
-                                            ),
-                                            const SizedBox(height: 5,),
-                                            smallTxt(txt: "${urun.price} TL", fontsize: 12, color: Colors.orangeAccent, fontweight: FontWeight.bold, ),
-                                            const SizedBox(height: 5,),
-                                            Row(
-                                              children: [
-                                                Visibility(visible: urun.coupon != "", child: bottomBanners(backgroundColor: Color(0xfffff0f4), icon: Icons.price_change_rounded, iconColor: Colors.pink, content: urun.coupon)),
-                                                Visibility(visible: urun.buyMorePayLess != "", child: bottomBanners(backgroundColor: Color(0xfffff6ee), icon: Icons.discount_rounded, iconColor: Colors.orange, content: urun.buyMorePayLess)),
-                                                Visibility(visible: urun.fastDelivery, child: bottomBanners(backgroundColor: Color(0xffebfaf3), icon: Icons.local_shipping, iconColor: Colors.green, content: "Hızlı Teslimat")),
-                                                Visibility(visible: urun.freeCargo, child: bottomBanners(backgroundColor: Color(0xfff7f7f7), icon: Icons.square_rounded, iconColor: Colors.grey, content: "Kargo Bedava")),
-                                              ],
-                                            )
-                                          ],
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 2,),
+                                    Row(
+                                      children: [
+                                        RatingBar.builder(
+                                          initialRating: urun.rating,
+                                          minRating: 1,
+                                          direction: Axis.horizontal,
+                                          allowHalfRating: true,
+                                          itemCount: 5,
+                                          itemPadding: const EdgeInsets.only(left: 1, right: 1),
+                                          itemSize: 16,
+                                          itemBuilder: (context, index) => const Icon( Icons.star, color: Colors.amber,size: 10,),
+                                          onRatingUpdate: (rating) {
+                                            // print(rating);
+                                          },
                                         ),
-                                      ),
-
-
-                                    ],
-                                  ),
-                                );
-                              },
+                                        smallTxt(txt: " (${urun.evaluation})", fontsize: 12, color: Colors.grey.shade700)
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5,),
+                                    smallTxt(txt: "${urun.price} TL", fontsize: 12, color: Colors.orangeAccent, fontweight: FontWeight.bold, ),
+                                    const SizedBox(height: 5,),
+                                    Spacer(),
+                                    Row(
+                                      children: [
+                                        Visibility(visible: urun.coupon != "", child: bottomBanners(backgroundColor: Color(0xfffff0f4), icon: Icons.price_change_rounded, iconColor: Colors.pink, content: urun.coupon)),
+                                        Visibility(visible: urun.buyMorePayLess != "", child: bottomBanners(backgroundColor: Color(0xfffff6ee), icon: Icons.discount_rounded, iconColor: Colors.orange, content: urun.buyMorePayLess)),
+                                        Visibility(visible: urun.fastDelivery, child: bottomBanners(backgroundColor: Color(0xffebfaf3), icon: Icons.local_shipping, iconColor: Colors.green, content: "Hızlı Teslimat")),
+                                        Visibility(visible: urun.freeCargo, child: bottomBanners(backgroundColor: Color(0xfff7f7f7), icon: Icons.square_rounded, iconColor: Colors.grey, content: "Kargo Bedava")),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }else{
-                    return const Center();
-                  }
-                },
+
+
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }else{
+                  return const Center();
+                }
+              },
             )
           ],
         ),
