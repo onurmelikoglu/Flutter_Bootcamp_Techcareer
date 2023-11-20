@@ -12,7 +12,7 @@ class PopulerUrunlerSayfa extends StatefulWidget {
 
 class _PopulerUrunlerSayfaState extends State<PopulerUrunlerSayfa> {
 
-  int? seciliKategori = -1;
+  int? seciliKategori = 0;
   int secilenSayfaIndex = 0;
 
   Future<List<Kategoriler>> kategorileriYukle() async{
@@ -74,21 +74,24 @@ class _PopulerUrunlerSayfaState extends State<PopulerUrunlerSayfa> {
     return urunlerListesi;
   }
 
-  Future<void> urunFiltrele(int kategori_id) async{
-
+  Future<List<Urunler>> urunFiltrele(int? kategori_id) async{
     var urunlerListesi = await urunleriYukle();
 
-    setState(() {
-      urunlerListesi.where((element)=> element.kategori.id == kategori_id ).toList();
-    });
+    var filtreliurunler =  urunlerListesi.where((i) =>
+                          i.kategori.id == kategori_id).toList();
 
+    if(filtreliurunler.isNotEmpty){
+      return filtreliurunler;
+    }else{
+      return urunlerListesi;
+    }
 
   }
 
   @override
   void initState() {
     super.initState();
-    urunleriYukle();
+    urunFiltrele(seciliKategori);
   }
   
   
@@ -111,7 +114,7 @@ class _PopulerUrunlerSayfaState extends State<PopulerUrunlerSayfa> {
               builder: (context, snapshot){
               if(snapshot.hasData){
                 var kategoriListesi = snapshot.data;
-                return Container(
+                return SizedBox(
                   height: screenHeight * 10/100,
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -124,17 +127,18 @@ class _PopulerUrunlerSayfaState extends State<PopulerUrunlerSayfa> {
                         child: ChoiceChip(
                           backgroundColor: Colors.white,
                           padding: const EdgeInsets.only(bottom: 0.1),
-                          label: smallTxt(txt: kategori.name, fontsize: 12, fontweight: FontWeight.bold, color: seciliKategori == index ? Colors.orange : Colors.grey),
+                          label: smallTxt(txt: kategori.name, fontsize: 12, fontweight: FontWeight.bold, color: seciliKategori == kategori.id ? Colors.orange : Colors.grey),
                           //labelStyle: TextStyle( color: seciliKategori == index ? Colors.orange : Colors.grey),
-                          side: BorderSide(color: seciliKategori == index ? Colors.orange : Colors.grey.shade300),
+                          side: BorderSide(color: seciliKategori == kategori.id ? Colors.orange : Colors.grey.shade300),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          selected: seciliKategori == index,
+                          selected: seciliKategori == kategori.id,
                           showCheckmark: false,
                           selectedColor: Colors.white,
                           onSelected: (bool selected) {
-                            print("Secili item: $index");
-                            seciliKategori = selected ? index : null;
-                            urunFiltrele(index+1);
+                            setState(() {
+                              seciliKategori = selected ? kategori.id : null;
+                              urunFiltrele(kategori.id);
+                            });
                           },
                         ),
                       );;
@@ -147,19 +151,18 @@ class _PopulerUrunlerSayfaState extends State<PopulerUrunlerSayfa> {
             },
           ),
             FutureBuilder<List<Urunler>>(
-              future: urunleriYukle(),
+              future: urunFiltrele(seciliKategori),
               builder: (context, snapshot){
                 if(snapshot.hasData){
                   var urunlerListesi = snapshot.data;
                   return GridView.builder(
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     scrollDirection: Axis.vertical,
                     itemCount: urunlerListesi!.length,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 1 / 2.22,
-
                     ),
                     itemBuilder: (context,index){
                       var urun = urunlerListesi[index];
