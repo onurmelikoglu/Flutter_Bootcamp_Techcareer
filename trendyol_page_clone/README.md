@@ -1,6 +1,6 @@
 # trendyol_page_clone
 
-In this study, we create an app clone for one page that has a list view. The purpose of this study is simply how to use Listview and Gridview widgets in action and use them on real-life projects to see different perspectives.
+In this study, we create an app clone for one page that has a list view. The purpose of this study is simply to show how to use Listview and Gridview widgets in action and use them on real-life projects to see different perspectives.
 
 ## Preview
 
