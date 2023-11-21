@@ -27,7 +27,7 @@ class _DetaySayfaState extends State<DetaySayfa> {
   void initState() {
     super.initState();
     var kisi = widget.kisi;
-    tfKisiAdi.text = kisi.kisi_adi;
+    tfKisiAdi.text = kisi.kisi_ad;
     tfKisiTel.text = kisi.kisi_tel;
   }
 

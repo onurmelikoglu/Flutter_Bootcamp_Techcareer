@@ -74,7 +74,7 @@ class _AnasayfaState extends State<Anasayfa> {
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(kisi.kisi_adi, style: TextStyle(fontSize: 20),),
+                                  Text(kisi.kisi_ad, style: TextStyle(fontSize: 20),),
                                   Text(kisi.kisi_tel, style: TextStyle(fontSize: 20),),
                                 ],
                               ),
@@ -83,7 +83,7 @@ class _AnasayfaState extends State<Anasayfa> {
                             IconButton(onPressed: (){
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                    content: Text("${kisi.kisi_adi} silinsin mi?"),
+                                    content: Text("${kisi.kisi_ad} silinsin mi?"),
                                   action: SnackBarAction(label: "Evet", onPressed: (){
                                     context.read<AnasayfaCubit>().sil(kisi.kisi_id);
                                   }),
