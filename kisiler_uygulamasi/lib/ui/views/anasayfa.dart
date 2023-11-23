@@ -85,7 +85,7 @@ class _AnasayfaState extends State<Anasayfa> {
                                 SnackBar(
                                     content: Text("${kisi.kisi_ad} silinsin mi?"),
                                   action: SnackBarAction(label: "Evet", onPressed: (){
-                                    context.read<AnasayfaCubit>().sil(kisi.kisi_id);
+                                    context.read<AnasayfaCubit>().sil(int.parse(kisi.kisi_id));
                                   }),
                                 )
                               );

@@ -1,47 +1,47 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:kisiler_uygulamasi/data/entity/kisiler.dart';
-import 'package:kisiler_uygulamasi/sqlite/veritabani_yardimcisi.dart';
+import 'package:kisiler_uygulamasi/data/entity/kisiler_cevap.dart';
 
 class KisilerDaoRepository {
-  Future<void> kaydet(String kisi_adi, String kisi_tel) async{
-    print("Kişi Kaydet: $kisi_adi - $kisi_tel");
+  List<Kisiler> parseKisilerCevap(String cevap){
+    return KisilerCevap.fromJson(json.decode(cevap)).kisiler;
+  }
+
+  Future<void> kaydet(String kisi_ad, String kisi_tel) async{
+    var url = "http://kasimadalan.pe.hu/kisiler/insert_kisiler.php";
+    var veri = { "kisi_ad": kisi_ad, "kisi_tel": kisi_tel };
+    var cevap = await Dio().post(url, data: FormData.fromMap(veri));
+    print("Kisi ekle : ${cevap.data.toString()}");
   }
 
   Future<void> guncelle(int kisi_id, String kisi_ad, String kisi_tel) async {
-    print("Kişi Güncelle : $kisi_id - $kisi_ad - $kisi_tel");
+    var url = "http://kasimadalan.pe.hu/kisiler/update_kisiler.php";
+    var veri = {"kisi_id": kisi_id, "kisi_ad": kisi_ad, "kisi_tel": kisi_tel};
+    var cevap = await Dio().post(url, data: FormData.fromMap(veri));
+    print("Kisi guncelle : ${cevap.data.toString()}");
   }
 
   Future<List<Kisiler>> kisileriYukle() async{
-   var db = await VeritabaniYardimcisi.veritabaniErisim();
-   List<Map<String,dynamic>> satirlar = await db.rawQuery("SELECT * FROM kisiler");
-
-   return List.generate(satirlar.length, (index){
-     var satir = satirlar[index];
-     var kisi_id = satir['kisi_id'];
-     var kisi_ad = satir['kisi_ad'];
-     var kisi_tel = satir['kisi_tel'];
-
-     return Kisiler(kisi_id: kisi_id, kisi_ad: kisi_ad, kisi_tel: kisi_tel);
-   });
+    var url = "http://kasimadalan.pe.hu/kisiler/tum_kisiler.php";
+    var cevap = await Dio().get(url);
+    return parseKisilerCevap(cevap.data.toString());
   }
 
   Future<List<Kisiler>> ara(String aramaKelimesi) async{
-    var kisilerListesi = <Kisiler>[];
-    var k1 = Kisiler(kisi_id: 1, kisi_ad: "Ahmet", kisi_tel: "1111");
-    var k2 = Kisiler(kisi_id: 2, kisi_ad: "Zeynep", kisi_tel: "2222");
-    var k3 = Kisiler(kisi_id: 3, kisi_ad: "Beyza", kisi_tel: "3333");
-    kisilerListesi.add(k1);
-    kisilerListesi.add(k2);
-    kisilerListesi.add(k3);
-
-    Iterable<Kisiler> filtreleme = kisilerListesi.where((kisiNesnesi){
-      return kisiNesnesi.kisi_ad.toLowerCase().contains(aramaKelimesi.toLowerCase());
-    });
-
-    return filtreleme.toList();
+    var url = "http://kasimadalan.pe.hu/kisiler/tum_kisiler_arama.php";
+    var veri = {"kisi_ad": aramaKelimesi};
+    var cevap = await Dio().post(url, data: FormData.fromMap(veri));
+    // print("Kisi ara : ${cevap.data.toString()}");
+    return parseKisilerCevap(cevap.data.toString());
   }
 
   Future<void> sil(int kisi_id) async{
-    print("Kişi Sil: $kisi_id");
+    var url = "http://kasimadalan.pe.hu/kisiler/delete_kisiler.php";
+    var veri = {"kisi_id": kisi_id};
+    var cevap = await Dio().post(url, data: FormData.fromMap(veri));
+    print("Kisi sil : ${cevap.data.toString()}");
   }
 
 }
