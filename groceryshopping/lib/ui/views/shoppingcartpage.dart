@@ -294,7 +294,7 @@ class orderButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 30, right: 30),
       child: customButton(
-          text: "Sipariş Ver",
+          text: "Ödemeye Geç",
           onPressed: (){
             showModalBottomSheet(
                 context: context,
