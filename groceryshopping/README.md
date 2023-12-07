@@ -1,6 +1,6 @@
 # Grocery Shopping
 
-In this assignment, I created a completely functional supermarket shopping interface using the bloc pattern. This application makes use of online services to list all of the products, add to the shopping list, list the shopping list, and remove from the shopping list. I implemented firebase auth to the app for the authentication functionality.
+In this assignment, I created a completely functional grocery shopping interface using the bloc pattern. This application makes use of online services to list all of the products, add to the shopping list, list the shopping list, and remove from the shopping list. I implemented firebase auth to the app for the authentication functionality.
 
 ## Preview
 
