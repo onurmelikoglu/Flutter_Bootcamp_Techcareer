@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "873565807595",
+    "project_id": "egitim-71844",
+    "storage_bucket": "egitim-71844.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873565807595:android:be98000c9e015ee56c2fae",
+        "android_client_info": {
+          "package_name": "com.example.kisiler_uygulamasi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBk_L7V154hgZHne3JRFMKu9k_Ue6xLE24"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

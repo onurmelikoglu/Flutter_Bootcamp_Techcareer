@@ -9,9 +9,9 @@ class Kisiler{
     required this.kisi_tel
   });
 
-  factory Kisiler.fromJson(Map<String,dynamic> json){
+  factory Kisiler.fromJson(Map<dynamic,dynamic> json, String key){
     return Kisiler(
-        kisi_id: json["kisi_id"] as String,
+        kisi_id: key,
         kisi_ad: json["kisi_ad"] as String,
         kisi_tel: json["kisi_tel"] as String
     );

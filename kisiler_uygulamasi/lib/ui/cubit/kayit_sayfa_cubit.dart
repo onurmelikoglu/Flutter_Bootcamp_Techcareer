@@ -6,7 +6,7 @@ class KayitSayfaCubit extends Cubit<void> {
 
   var krepo = KisilerDaoRepository();
 
-  Future<void> kaydet(String kisi_ad, String kisi_tel) async{
-    await krepo.kaydet(kisi_ad, kisi_tel);
+  Future<void> kaydet(String kisi_adi, String kisi_tel) async{
+    await krepo.kaydet(kisi_adi, kisi_tel);
   }
 }

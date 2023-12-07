@@ -58,10 +58,7 @@ class _AnasayfaState extends State<Anasayfa> {
                   var kisi = kisilerListesi[index];
                   return GestureDetector(
                     onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => DetaySayfa(kisi: kisi)))
-                          .then((value){
-                        context.read<AnasayfaCubit>().kisileriYukle();
-                      });
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => DetaySayfa(kisi: kisi)));
                     },
                     child: Card(
                       child: SizedBox(
@@ -85,7 +82,7 @@ class _AnasayfaState extends State<Anasayfa> {
                                 SnackBar(
                                     content: Text("${kisi.kisi_ad} silinsin mi?"),
                                   action: SnackBarAction(label: "Evet", onPressed: (){
-                                    context.read<AnasayfaCubit>().sil(int.parse(kisi.kisi_id));
+                                    context.read<AnasayfaCubit>().sil(kisi.kisi_id);
                                   }),
                                 )
                               );
@@ -105,10 +102,7 @@ class _AnasayfaState extends State<Anasayfa> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const KayitSayfa()))
-              .then((value){
-                context.read<AnasayfaCubit>().kisileriYukle();
-              });
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const KayitSayfa()));
         },
         child: const Icon(Icons.add),
       ),
