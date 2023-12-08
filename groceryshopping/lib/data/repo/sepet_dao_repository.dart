@@ -20,11 +20,23 @@ class SepetDaoRepository {
 
   Future<void> sepetEkle(Yemekler yemek, int yemek_siparis_adet, String kullanici_adi ) async{
     var url = "http://kasimadalan.pe.hu/yemekler/sepeteYemekEkle.php";
+    List<SepetYemekler> sepettekiYemekler = await sepetiYukle(kullanici_adi);
+    int yemekSiparisAdeti = yemek_siparis_adet;
+    if(sepettekiYemekler.isNotEmpty){
+      for(var sepetyemek in sepettekiYemekler){
+        if(sepetyemek.yemek_adi == yemek.yemek_adi){
+          yemekSiparisAdeti += int.parse(sepetyemek.yemek_siparis_adet);
+          sepettenSil(kullanici_adi, int.parse(sepetyemek.sepet_yemek_id));
+          break;
+        }
+      }
+    }
+
     var veri = {
       "yemek_adi": yemek.yemek_adi,
       "yemek_resim_adi": yemek.yemek_resim_adi,
       "yemek_fiyat": yemek.yemek_fiyat,
-      "yemek_siparis_adet": yemek_siparis_adet,
+      "yemek_siparis_adet": yemekSiparisAdeti,
       "kullanici_adi": kullanici_adi,
     };
     await Dio().post(url, data: FormData.fromMap(veri));
@@ -51,6 +63,10 @@ class SepetDaoRepository {
     await sepettenSil(kullanici_adi, int.parse(sepetyemek.sepet_yemek_id));
     Yemekler yemek = Yemekler(yemek_id: "", yemek_adi: sepetyemek.yemek_adi, yemek_resim_adi: sepetyemek.yemek_resim_adi, yemek_fiyat: sepetyemek.yemek_fiyat);
     await sepetEkle(yemek, newQuantity, kullanici_adi);
+  }
+
+  Future<void> sepetiDetaydanGuncelle()async{
+
   }
 
   Future<void> sepetiTamamla(String kullanici_adi, List<int> tumSepetYemekIdListesi) async{
