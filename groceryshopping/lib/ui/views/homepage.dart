@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groceryshopping/data/entity/kullanicilar.dart';
@@ -11,6 +13,7 @@ import 'package:groceryshopping/ui/widgets/smallText.dart';
 import 'package:groceryshopping/utils/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,6 +29,30 @@ class _HomePageState extends State<HomePage> {
   int sepetToplamAdet = 0;
   bool isLoading = false;
   String currentUserName = "";
+  String greetings = "Merhaba";
+
+  Future<void> karsilamaMetniGuncelleme() async{
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      karsilamaMetniAl();
+    });
+  }
+
+  Future<void> karsilamaMetniAl() async{
+    var now = DateTime.now();
+    var formatter = DateFormat('HH:mm');
+    formatter.format(now);
+    if(currentUserName.isNotEmpty){
+      setState(() {
+        if (now.hour >= 6 && now.hour < 12) {
+          greetings = "Günaydın, $currentUserName";
+        } else if (now.hour >= 12 && now.hour < 18) {
+          greetings = "Tünaydın, $currentUserName";
+        } else {
+          greetings = "İyi Akşamlar, $currentUserName";
+        }
+      });
+    }
+  }
 
   Future<void> sepetToplamAdetAl() async{
     sepetToplamAdet = await srepo.sepetToplamAdetAl();
@@ -55,7 +82,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
+    getCurrentUser().then((value){
+      karsilamaMetniAl();
+    });
+    // karsilamaMetniGuncelleme();
     context.read<HomepageCubit>().yemekleriYukle();
     sepetToplamAdetAl();
     checkFirstLaunch();
@@ -77,7 +107,7 @@ class _HomePageState extends State<HomePage> {
             centerTitle: false,
             title: Padding(
               padding: const EdgeInsets.only(left: 5, right: 5),
-              child: smallText(text: currentUserName != "" ? "Merhaba $currentUserName":"Merhaba", fontsize: 24, color: Colors.white, fontweight: FontWeight.w600,),
+              child: smallText(text: greetings, fontsize: 24, color: Colors.white, fontweight: FontWeight.w600,),
             ),),
           SliverList(
               delegate: SliverChildBuilderDelegate((context, index){
