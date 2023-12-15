@@ -5,15 +5,20 @@ import 'package:groceryshopping/data/repo/yemekler_dao_repository.dart';
 class HomepageCubit extends Cubit<List<Yemekler>> {
   HomepageCubit():super(<Yemekler>[]);
 
-  var krepo = YemeklerDaoRepository();
+  var yrepo = YemeklerDaoRepository();
 
   Future<void> yemekleriYukle() async{
-    var liste = await krepo.yemekleriYukle();
+    var liste = await yrepo.yemekleriYukle();
     emit(liste);
   }
 
   Future<void> yemekleriAra(String aramaKelimesi) async{
-    var liste = await krepo.yemekleriAra(aramaKelimesi);
+    var liste = await yrepo.yemekleriAra(aramaKelimesi);
+    emit(liste);
+  }
+
+  Future<void> yemekleriFiltrele(int order, int minPrice, int maxPrice) async{
+    var liste = await yrepo.yemekleriFiltrele(order, minPrice, maxPrice);
     emit(liste);
   }
 

@@ -7,8 +7,8 @@ import 'package:groceryshopping/data/entity/yemekler.dart';
 import 'package:groceryshopping/data/repo/kullanicilar_dao_repository.dart';
 import 'package:groceryshopping/data/repo/sepet_dao_repository.dart';
 import 'package:groceryshopping/ui/cubit/homepage_cubit.dart';
-import 'package:groceryshopping/ui/views/bottom_navigation.dart';
 import 'package:groceryshopping/ui/views/detailpage.dart';
+import 'package:groceryshopping/ui/widgets/customButton.dart';
 import 'package:groceryshopping/ui/widgets/smallText.dart';
 import 'package:groceryshopping/utils/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,6 +30,9 @@ class _HomePageState extends State<HomePage> {
   String currentUserName = "";
   String greetings = "Merhaba";
   ScrollController scrollController = ScrollController();
+  double minPrice = 0.0;
+  double maxPrice = 1000.0;
+  int? seciliFiltre = 0;
 
   Future<void> karsilamaMetniGuncelleme() async{
     Timer.periodic(const Duration(seconds: 5), (timer) {
@@ -159,7 +162,122 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ),
                                   const SizedBox(width: 15,),
-                                  const Icon(Icons.settings, color: Colors.white, size: 32,)
+                                  GestureDetector(
+                                      onTap: (){
+                                        showModalBottomSheet(
+                                            context: context,
+                                            builder: (BuildContext context){
+                                              return StatefulBuilder(
+                                                builder: (context,state) {
+                                                  return SizedBox(
+                                                    width: screenWidth,
+                                                    height: 400,
+                                                    child: Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding: const EdgeInsets.only(top: 10, left: 15, right: 15),
+                                                          child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            children: [
+                                                              smallText(text: "Filtrele", fontsize: 22, color: mediumColor,fontweight: FontWeight.w600,),
+                                                              IconButton(
+                                                                  onPressed: (){
+                                                                    Navigator.pop(context);
+                                                                  },
+                                                                  icon: Icon(Icons.close, size: 28, color: mediumColor)
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const Divider(),
+                                                        Padding(
+                                                          padding: const EdgeInsets.only(left: 15, right: 15),
+                                                          child: Column(
+                                                            children: [
+                                                              smallText(text: "Sıralama", fontsize: 16, color: mediumColor, fontweight: FontWeight.w600,),
+                                                              const SizedBox(height: 10,),
+                                                              Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                children: [
+                                                                  ChoiceChip(
+                                                                    backgroundColor: Colors.white,
+                                                                    padding: const EdgeInsets.only(bottom: 0.1),
+                                                                    label: smallText(text: "A > Z", fontsize: 12, fontweight: FontWeight.bold, color: seciliFiltre == 1 ? primaryColor : Colors.grey),
+                                                                    //labelStyle: TextStyle( color: seciliFiltre == index ? Colors.orange : Colors.grey),
+                                                                    side: BorderSide(color: seciliFiltre == 1 ? primaryColor: Colors.grey.shade300),
+                                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                                    selected: seciliFiltre == 1,
+                                                                    showCheckmark: false,
+                                                                    selectedColor: Colors.white,
+                                                                    onSelected: (bool selected) {
+                                                                      state((){});
+                                                                      setState(() {
+                                                                        seciliFiltre = selected ? 1 : null;
+                                                                        print("selected: $seciliFiltre");
+                                                                      });
+                                                                    },
+                                                                  ),
+                                                                  ChoiceChip(
+                                                                    backgroundColor: Colors.white,
+                                                                    padding: const EdgeInsets.only(bottom: 0.1),
+                                                                    label: smallText(text: "Z > A", fontsize: 12, fontweight: FontWeight.bold, color: seciliFiltre == 2 ? primaryColor : Colors.grey),
+                                                                    //labelStyle: TextStyle( color: seciliFiltre == index ? Colors.orange : Colors.grey),
+                                                                    side: BorderSide(color: seciliFiltre == 2 ? primaryColor: Colors.grey.shade300),
+                                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                                    selected: seciliFiltre == 2,
+                                                                    showCheckmark: false,
+                                                                    selectedColor: Colors.white,
+                                                                    onSelected: (bool selected) {
+                                                                      state((){});
+                                                                      setState(() {
+                                                                        seciliFiltre = selected ? 2 : null;
+                                                                        print("selected: $seciliFiltre");
+                                                                      });
+                                                                    },
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              const Divider(),
+                                                              smallText(text: "Fiyat Aralığı", fontsize: 16, color: mediumColor, fontweight: FontWeight.w600,),
+                                                              const SizedBox(height: 10,),
+                                                              Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                children: [
+                                                                  Chip(label: Text("${minPrice.toInt().toString()} ₺")),
+                                                                  Chip(label: Text("${maxPrice.toInt().toString()} ₺")),
+                                                                ],
+                                                              ),
+                                                              RangeSlider(
+                                                                values: RangeValues(minPrice, maxPrice),
+                                                                labels: RangeLabels(minPrice.toString(), maxPrice.toString()),
+                                                                min: 0.0,
+                                                                max: 1000.0,
+                                                                onChanged: (RangeValues values) {
+                                                                  state((){});
+                                                                  setState(() {
+                                                                    minPrice = values.start;
+                                                                    maxPrice = values.end;
+                                                                  });
+                                                                },
+                                                              ),
+                                                              customButton(text: "Onayla", onPressed: (){
+                                                                context.read<HomepageCubit>().yemekleriFiltrele(seciliFiltre ?? 0, minPrice.toInt(), maxPrice.toInt()).then((value){
+                                                                  Navigator.pop(context);
+                                                                });
+                                                              },)
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  );
+                                                }
+                                              );
+                                            }
+                                        );
+                                      },
+                                      child: const Icon(Icons.filter_alt_rounded, color: Colors.white, size: 32,)
+                                  )
                                 ],
                               ),
                               const SizedBox(height: 15,),
