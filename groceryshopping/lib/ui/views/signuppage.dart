@@ -52,7 +52,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     controller: tcUsername,
                     decoration: const InputDecoration(labelText: "Kullanıcı Adı"),
                     validator: (value) {
-                      if (value!.isEmpty || !RegExp(r'^[a-z A-Z]+$').hasMatch(value!)) {
+                      if (value!.isEmpty) {
                         return 'Lütfen Boş Alan Bırakmayınız';
                       }
                       return null;

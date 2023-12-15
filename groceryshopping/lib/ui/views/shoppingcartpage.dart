@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groceryshopping/data/entity/kullanicilar.dart';
 import 'package:groceryshopping/data/entity/sepet_yemekler.dart';
 import 'package:groceryshopping/data/repo/kullanicilar_dao_repository.dart';
+import 'package:groceryshopping/ui/cubit/bottomnavigation_cubit.dart';
 import 'package:groceryshopping/ui/cubit/shoppingcartpage_cubit.dart';
 import 'package:groceryshopping/ui/views/order_complete_screen.dart';
 import 'package:groceryshopping/ui/widgets/customButton.dart';
@@ -75,9 +76,6 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                     var sepetyemek = sepetYemekListesi[index];
                     tcItemQuantity.add(TextEditingController());
                     tcItemQuantity[index].text = sepetyemek.yemek_siparis_adet.toString();
-                    // tumSepetYemekIdListesi.add(int.parse(sepetyemek.sepet_yemek_id));
-
-                    // totalPrice += int.parse(sepetyemek.yemek_siparis_adet) * int.parse(sepetyemek.yemek_fiyat);
                     return Padding(
                       padding: const EdgeInsets.only(left: 20, right: 20),
                       child: SizedBox(
@@ -87,13 +85,13 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                           surfaceTintColor: Colors.white,
                           elevation: 2,
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Image.network("http://kasimadalan.pe.hu/yemekler/resimler/${sepetyemek.yemek_resim_adi}", width: 100,),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-                                child: SizedBox(
-                                  width: screenWidth/1.70,
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -127,6 +125,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                                         TextButton(
                                                           onPressed: () {
                                                             context.read<ShoppingCartPageCubit>().sepettenSil(currentUserName,int.parse(sepetyemek.sepet_yemek_id)).then((value){
+                                                              context.read<BottomNavigationCubit>().sepetToplamAdetAl();
                                                               context.read<ShoppingCartPageCubit>().sepetiYukle(currentUserName);
                                                               Navigator.pop(context);
                                                             });
@@ -143,68 +142,76 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                                         ],
                                       ),
                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
-                                          InkWell(
-                                              borderRadius: BorderRadius.circular(50),
-                                              child: Icon(Icons.remove,size: 28, color: tcItemQuantity[index].text == "1" ? lightColor:primaryColor,),
-                                              onTap: () {
-                                                int currentQuantity = int.parse(tcItemQuantity[index].text);
-                                                if(currentQuantity > 1){
-                                                  context.read<ShoppingCartPageCubit>().sepetiGuncelle(currentUserName,sepetyemek,(currentQuantity-1)).then((value){
-                                                    context.read<ShoppingCartPageCubit>().sepetiYukle(currentUserName);
-                                                  });
-                                                  print(tcItemQuantity[index].text);
-                                                }
-                                              }
-                                          ),
-                                          const SizedBox(width: 5),
-                                          SizedBox(
-                                            width: 40,
-                                            height: 40,
-                                            child: TextField(
-                                              onChanged: (value){
-                                                if(value.isEmpty || int.parse(value) < 1){
-                                                  setState(() { // yanlışlıkla input silinmesini engeller
-                                                    tcItemQuantity[index].text = "1";
-                                                  });
-                                                }else{
-                                                  int newQuantity = int.parse(value);
-                                                  context.read<ShoppingCartPageCubit>().sepetiGuncelle(currentUserName,sepetyemek,newQuantity).then((value){
-                                                    context.read<ShoppingCartPageCubit>().sepetiYukle(currentUserName);
-                                                  });
-                                                }
-                                                print("Değer: $value");
-                                              },
-                                              decoration: InputDecoration(
-                                                  contentPadding: const EdgeInsets.all(2),
-                                                  enabledBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(color: lightColor),
-                                                      borderRadius: BorderRadius.circular(16)
-                                                  ),
-                                                  focusedBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(color: lightColor),
-                                                      borderRadius: BorderRadius.circular(16)
-                                                  )
+                                          Row(
+                                            children: [
+                                              InkWell(
+                                                  borderRadius: BorderRadius.circular(50),
+                                                  child: Icon(Icons.remove,size: 28, color: tcItemQuantity[index].text == "1" ? lightColor:primaryColor,),
+                                                  onTap: () {
+                                                    int currentQuantity = int.parse(tcItemQuantity[index].text);
+                                                    if(currentQuantity > 1){
+                                                      context.read<ShoppingCartPageCubit>().sepetiGuncelle(currentUserName,sepetyemek,(currentQuantity-1)).then((value){
+                                                        context.read<BottomNavigationCubit>().sepetToplamAdetAl();
+                                                        context.read<ShoppingCartPageCubit>().sepetiYukle(currentUserName);
+                                                      });
+                                                      //  print(tcItemQuantity[index].text);
+                                                    }
+                                                  }
                                               ),
-                                              controller: tcItemQuantity[index],
-                                              keyboardType: TextInputType.number,
-                                              textAlign: TextAlign.center,
-                                            ),
+                                              const SizedBox(width: 5),
+                                              SizedBox(
+                                                width: 40,
+                                                height: 40,
+                                                child: TextField(
+                                                  onChanged: (value){
+                                                    if(value.isEmpty || int.parse(value) < 1){
+                                                      setState(() { // yanlışlıkla input silinmesini engeller
+                                                        tcItemQuantity[index].text = "1";
+                                                      });
+                                                    }else{
+                                                      int newQuantity = int.parse(value);
+                                                      context.read<ShoppingCartPageCubit>().sepetiGuncelle(currentUserName,sepetyemek,newQuantity).then((value){
+                                                        context.read<BottomNavigationCubit>().sepetToplamAdetAl();
+                                                        context.read<ShoppingCartPageCubit>().sepetiYukle(currentUserName);
+                                                      });
+                                                    }
+                                                    // print("Değer: $value");
+                                                  },
+                                                  decoration: InputDecoration(
+                                                      contentPadding: const EdgeInsets.all(2),
+                                                      enabledBorder: OutlineInputBorder(
+                                                          borderSide: BorderSide(color: lightColor),
+                                                          borderRadius: BorderRadius.circular(16)
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                          borderSide: BorderSide(color: lightColor),
+                                                          borderRadius: BorderRadius.circular(16)
+                                                      )
+                                                  ),
+                                                  controller: tcItemQuantity[index],
+                                                  keyboardType: TextInputType.number,
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 5),
+                                              InkWell(
+                                                borderRadius: BorderRadius.circular(50),
+                                                onTap: (){
+                                                  int currentQuantity = int.tryParse(tcItemQuantity[index].text) ?? 1;
+                                                  context.read<ShoppingCartPageCubit>().sepetiGuncelle(currentUserName,sepetyemek,(currentQuantity+1)).then((value){
+                                                    context.read<BottomNavigationCubit>().sepetToplamAdetAl();
+                                                    context.read<ShoppingCartPageCubit>().sepetiYukle(currentUserName);
+                                                  });
+                                                  // print(tcItemQuantity[index].text);
+                                                },
+                                                child: Icon(Icons.add,size: 28, color: primaryColor,),
+                                              ),
+                                            ],
                                           ),
-                                          const SizedBox(width: 5),
-                                          InkWell(
-                                            borderRadius: BorderRadius.circular(50),
-                                            onTap: (){
-                                              int currentQuantity = int.tryParse(tcItemQuantity[index].text) ?? 1;
-                                              context.read<ShoppingCartPageCubit>().sepetiGuncelle(currentUserName,sepetyemek,(currentQuantity+1)).then((value){
-                                                context.read<ShoppingCartPageCubit>().sepetiYukle(currentUserName);
-                                              });
-                                              // print(tcItemQuantity[index].text);
-                                            },
-                                            child: Icon(Icons.add,size: 28, color: primaryColor,),
-                                          ),
-                                          const Spacer(),
+                                          // const Spacer(),
                                           smallText(text: "${int.parse(sepetyemek.yemek_fiyat)*int.parse(tcItemQuantity[index].text)} ₺", fontsize: 22, color: mediumColor, fontweight: FontWeight.w600,)
                                         ],
                                       )
@@ -241,6 +248,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
           }
         }
       ),
+      // bottomNavigationBar: const Center(),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groceryshopping/data/entity/kullanicilar.dart';
 import 'package:groceryshopping/data/entity/yemekler.dart';
 import 'package:groceryshopping/data/repo/kullanicilar_dao_repository.dart';
+import 'package:groceryshopping/ui/cubit/bottomnavigation_cubit.dart';
 import 'package:groceryshopping/ui/cubit/detailpage_cubit.dart';
 import 'package:groceryshopping/ui/views/bottom_navigation.dart';
 import 'package:groceryshopping/ui/views/loginpage.dart';
@@ -146,6 +147,7 @@ class _DetailPageState extends State<DetailPage> {
               // print("user: $currentUserName");
               var yemekSiparisAdeti = int.parse(tcItemQuantity.text);
               context.read<DetailPageCubit>().sepetEkle(yemek, yemekSiparisAdeti, currentUserName ).then((value){
+                context.read<BottomNavigationCubit>().sepetToplamAdetAl();
                 Navigator.of(context).popUntil((route) => route.isFirst);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

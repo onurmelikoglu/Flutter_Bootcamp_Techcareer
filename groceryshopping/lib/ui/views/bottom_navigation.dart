@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:groceryshopping/data/repo/sepet_dao_repository.dart';
+import 'package:groceryshopping/ui/cubit/bottomnavigation_cubit.dart';
 import 'package:groceryshopping/ui/views/homepage.dart';
 import 'package:groceryshopping/ui/views/shoppingcartpage.dart';
 import 'package:groceryshopping/ui/views/userprofile.dart';
@@ -22,6 +25,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     // TODO: implement initState
     super.initState();
     pageIndex = widget.tabIndex;
+    context.read<BottomNavigationCubit>().sepetToplamAdetAl();
   }
 
   @override
@@ -42,21 +46,26 @@ class _BottomNavigationState extends State<BottomNavigation> {
             topLeft: Radius.circular(30.0),
             topRight: Radius.circular(30.0),
           ),
-          child: BottomNavigationBar(
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "Anasayfa"),
-              BottomNavigationBarItem(icon: Icon(Icons.shopping_cart_rounded), label: "Sepet"),
-              BottomNavigationBarItem(icon: Icon(Icons.person_2), label: "Hesap"),
-            ],
-            currentIndex: pageIndex,
-            backgroundColor: Colors.white,
-            selectedItemColor: primaryColor,
-            //unselectedItemColor: Colors.white38,
-            onTap: (index){
-              setState(() {
-                pageIndex = index;
-              });
-            },
+          child: BlocBuilder<BottomNavigationCubit,int>(
+            builder: (context, sepetToplamAdet) {
+              return BottomNavigationBar(
+                items: [
+                  const BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "Anasayfa"),
+                  BottomNavigationBarItem(
+                      icon: sepetToplamAdet > 0 ? Badge(label: Text(sepetToplamAdet.toString()), child: const Icon(Icons.shopping_cart_rounded),) : const Icon(Icons.shopping_cart_rounded),label: "Sepet"),
+                  const BottomNavigationBarItem(icon: Icon(Icons.person_2), label: "Hesap"),
+                ],
+                currentIndex: pageIndex,
+                backgroundColor: Colors.white,
+                selectedItemColor: primaryColor,
+                //unselectedItemColor: Colors.white38,
+                onTap: (index){
+                  setState(() {
+                    pageIndex = index;
+                  });
+                },
+              );
+            }
           ),
         ),
       ),

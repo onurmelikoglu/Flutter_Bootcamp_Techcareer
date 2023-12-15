@@ -26,10 +26,10 @@ class _HomePageState extends State<HomePage> {
 
   var srepo = SepetDaoRepository();
   var krepo = KullanicilarDaoRepository();
-  int sepetToplamAdet = 0;
   bool isLoading = false;
   String currentUserName = "";
   String greetings = "Merhaba";
+  ScrollController scrollController = ScrollController();
 
   Future<void> karsilamaMetniGuncelleme() async{
     Timer.periodic(const Duration(seconds: 5), (timer) {
@@ -54,12 +54,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> sepetToplamAdetAl() async{
-    sepetToplamAdet = await srepo.sepetToplamAdetAl();
-    setState(() { sepetToplamAdet = sepetToplamAdet; });
-    //print("Toplam Adet : $sepetToplamAdet");
-  }
-
   Future<void> getCurrentUser() async{
     Kullanicilar? currentUser = await krepo.getCurrentUser();
     if(currentUser != null){
@@ -79,15 +73,24 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> scrollListener() async {
+    if (scrollController.offset <= scrollController.position.minScrollExtent &&
+        !scrollController.position.outOfRange) {
+      // At the top of the page, prevent bouncing effect
+      scrollController.position.didEndScroll();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    scrollController = ScrollController();
+    scrollController.addListener(scrollListener);
     getCurrentUser().then((value){
       karsilamaMetniAl();
     });
     // karsilamaMetniGuncelleme();
     context.read<HomepageCubit>().yemekleriYukle();
-    sepetToplamAdetAl();
     checkFirstLaunch();
   }
 
@@ -100,6 +103,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       body: CustomScrollView(
+        physics: const ClampingScrollPhysics(),
         slivers: [
           SliverAppBar(
             floating: false,
@@ -155,15 +159,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ),
                                   const SizedBox(width: 15,),
-                                  sepetToplamAdet > 0 ?
-                                  GestureDetector(
-                                    onTap:(){
-                                      Navigator.pushReplacement(context,MaterialPageRoute(
-                                          builder: (context) => BottomNavigation(tabIndex: 1)));
-                                    },
-                                    child: Badge(label: Text(sepetToplamAdet.toString()), child: const Icon(Icons.shopping_cart_rounded, color: Colors.white, size: 32,))
-                                  ):
-                                  const Icon(Icons.shopping_cart_rounded, color: Colors.white, size: 32,)
+                                  const Icon(Icons.settings, color: Colors.white, size: 32,)
                                 ],
                               ),
                               const SizedBox(height: 15,),
@@ -193,6 +189,7 @@ class _HomePageState extends State<HomePage> {
                               builder: (context, yemeklerListesi){
                                 if(yemeklerListesi.isNotEmpty){
                                   return GridView.builder(
+                                    controller: scrollController,
                                     shrinkWrap: true,
                                     physics: const NeverScrollableScrollPhysics(),
                                     scrollDirection: Axis.vertical,
@@ -211,15 +208,14 @@ class _HomePageState extends State<HomePage> {
                                               builder: (context) => DetailPage(yemek: yemek)))
                                               .then((value){
                                             context.read<HomepageCubit>().yemekleriYukle();
-                                            sepetToplamAdetAl();
                                           });
                                         },
                                         child: isLoading ?  Shimmer.fromColors(
                                             baseColor: Colors.grey[300]!,
                                             highlightColor: Colors.grey[100]!,
-                                            child: productCard(yemek: yemek, sepetToplamAdetAl: sepetToplamAdetAl),
+                                            child: productCard(yemek: yemek),
                                         ):
-                                        productCard(yemek: yemek, sepetToplamAdetAl: sepetToplamAdetAl),
+                                        productCard(yemek: yemek),
                                       );
                                     },
                                   );
@@ -263,8 +259,7 @@ class productCardShimmer extends StatelessWidget {
 
 class productCard extends StatelessWidget {
   Yemekler yemek;
-  Function sepetToplamAdetAl;
-  productCard({required this.yemek, required this.sepetToplamAdetAl});
+  productCard({required this.yemek});
 
   @override
   Widget build(BuildContext context) {
@@ -301,7 +296,6 @@ class productCard extends StatelessWidget {
                           onPressed: () {
                             Navigator.push(context, MaterialPageRoute( builder: (context) => DetailPage(yemek: yemek))).then((value){
                               context.read<HomepageCubit>().yemekleriYukle();
-                              sepetToplamAdetAl();
                             });
                           },
                           style: ElevatedButton.styleFrom(

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:groceryshopping/ui/cubit/bottomnavigation_cubit.dart';
 import 'package:groceryshopping/ui/cubit/detailpage_cubit.dart';
 import 'package:groceryshopping/ui/cubit/homepage_cubit.dart';
 import 'package:groceryshopping/ui/cubit/loginpage_cubit.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => SignUpPageCubit()),
         BlocProvider(create: (context) => ShoppingCartPageCubit()),
         BlocProvider(create: (context) => UserProfileCubit()),
+        BlocProvider(create: (context) => BottomNavigationCubit()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
