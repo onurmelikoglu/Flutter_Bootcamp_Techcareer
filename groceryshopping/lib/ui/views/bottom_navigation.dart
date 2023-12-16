@@ -59,7 +59,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   const BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "Anasayfa"),
                   BottomNavigationBarItem(
                       icon: sepetToplamAdet > 0 ? Badge(label: Text(sepetToplamAdet.toString()), child: const Icon(Icons.shopping_cart_rounded),) : const Icon(Icons.shopping_cart_rounded),label: "Sepet"),
-                  const BottomNavigationBarItem(icon: Icon(Icons.casino), label: "Rulet"),
+                  const BottomNavigationBarItem(icon: Icon(Icons.casino), label: "Ne Yesem"),
                   const BottomNavigationBarItem(icon: Icon(Icons.person_2), label: "Hesap"),
                 ],
                 currentIndex: pageIndex,
