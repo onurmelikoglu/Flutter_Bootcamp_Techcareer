@@ -16,36 +16,34 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-
   var krepo = KullanicilarDaoRepository();
-  String username = "";
-  String useremail = "";
-  bool isUserLogedIn = false;
+  Kullanicilar? kullanici;
   bool isLoading = true;
+  final formKey = GlobalKey<FormState>();
+  final tcUsername = TextEditingController();
+  final tcUserAddress = TextEditingController();
 
   Future<void> getCurrentUser() async {
     try {
       Kullanicilar? currentUser = await krepo.getCurrentUser();
       if (currentUser != null) {
         setState(() {
-          username = currentUser.username;
-          useremail = currentUser.email;
-          isUserLogedIn = true;
+          kullanici = currentUser;
+          tcUsername.text = kullanici!.username;
+          tcUserAddress.text = kullanici!.address;
           isLoading = false;
         });
       } else {
-        print("User not found or an error occurred.");
         setState(() { isLoading = false; });
       }
     } catch (e) {
-      print("Error: $e");
+      // print("Error: $e");
     }
     setState(() { isLoading = false; });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getCurrentUser();
   }
@@ -56,61 +54,153 @@ class _UserProfileState extends State<UserProfile> {
     var screenWidth = screenInfo.size.width;
     var screenHeight = screenInfo.size.height;
     return Scaffold(
-      appBar: AppBar(title: smallText(text: "Profil", fontsize: 24, color: mediumColor, fontweight: FontWeight.w600,), centerTitle: true,),
-      body: isLoading ? const Center(child: CircularProgressIndicator()) :
-      isUserLogedIn ?
-      Column(
-        children: [
-          ListTile(
-            leading: CircleAvatar(
-              backgroundImage: const AssetImage("assets/images/profile.png"),
-              backgroundColor: lightColor,
-              radius: 30,
-            ),
-            title: smallText(text: username, fontsize: 18, color: mediumColor, fontweight: FontWeight.w600,),
-            subtitle: smallText(text: useremail, fontsize: 16, color: lightColor),
-            onTap: () {},
-          ),
-          const Divider(),
-          SizedBox(
-            width: screenWidth,
-            height: screenHeight/1.48,
-            child: Center(
-              child: ElevatedButton(
-                  onPressed: (){
-                    context.read<UserProfileCubit>().signOut().then((value){
-                      Navigator.pushReplacement(context,MaterialPageRoute(
-                          builder: (context) => BottomNavigation(tabIndex: 2)));
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18), // <-- Radius
-                      )
-                  ),
-                  child: smallText(text: "Çıkış Yap", fontsize: 16, color: Colors.white)
-              ),
-            ),
-          )
-        ],
-      ) :
-      Center(
-        child: ElevatedButton(
-            onPressed: (){
-              Navigator.push(context,MaterialPageRoute(builder: (context) => const LoginPage()),// Remove all routes from the stack
-              );
-            },
-            style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18), // <-- Radius
-                )
-            ),
-            child: smallText(text: "Giriş Yap", fontsize: 16, color: Colors.white)
+      appBar: AppBar(
+        title: smallText(
+          text: "Profil",
+          fontsize: 24,
+          color: mediumColor,
+          fontweight: FontWeight.w600,
         ),
-      )
-      ,
+        centerTitle: true,
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : kullanici != null
+              ? SizedBox(
+                  width: screenWidth,
+                  height: screenHeight,
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage:
+                              const AssetImage("assets/images/profile.png"),
+                          backgroundColor: lightColor,
+                          radius: 30,
+                        ),
+                        title: smallText(
+                          text: kullanici!.username,
+                          fontsize: 18,
+                          color: mediumColor,
+                          fontweight: FontWeight.w600,
+                        ),
+                        subtitle: smallText(
+                            text: kullanici!.email, fontsize: 16, color: lightColor),
+                        onTap: () {},
+                      ),
+                      const Divider(),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Form(
+                                  key: formKey,
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        controller: tcUsername,
+                                        decoration: const InputDecoration(
+                                            labelText: "Kullanıcı Adı"),
+                                      ),
+                                      const SizedBox(
+                                        height: 15,
+                                      ),
+                                      TextFormField(
+                                          controller: tcUserAddress,
+                                          decoration: const InputDecoration(
+                                              labelText: "Adres")),
+                                    ],
+                                  )),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        context
+                                            .read<UserProfileCubit>()
+                                            .saveUserData(kullanici!.userid, tcUsername.text,
+                                                tcUserAddress.text).then((value){
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(
+                                                      backgroundColor: primaryColor,
+                                                      content: smallText(text: "Kayıt Güncellendi!", fontsize: 16, color: Colors.white),
+                                                      duration: const Duration(seconds: 3),
+                                                    ),
+                                                  );
+                                                });
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: primaryColor,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                18), // <-- Radius
+                                          )),
+                                      child: smallText(
+                                          text: "Kaydet",
+                                          fontsize: 16,
+                                          color: Colors.white)),
+                                  const signOutButton(),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              : Center(
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const LoginPage()), // Remove all routes from the stack
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(18), // <-- Radius
+                          )),
+                      child: smallText(
+                          text: "Giriş Yap",
+                          fontsize: 16,
+                          color: Colors.white)),
+                ),
+    );
+  }
+}
+
+class signOutButton extends StatelessWidget {
+  const signOutButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ElevatedButton(
+          onPressed: () {
+            context.read<UserProfileCubit>().signOut().then((value) {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => BottomNavigation(tabIndex: 0)));
+            });
+          },
+          style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18), // <-- Radius
+              )),
+          child:
+              smallText(text: "Çıkış Yap", fontsize: 16, color: Colors.white)),
     );
   }
 }

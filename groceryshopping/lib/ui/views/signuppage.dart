@@ -62,7 +62,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     controller: tcEmail,
                     decoration: const InputDecoration(labelText: "Email"),
                     validator: (value) {
-                      if (value!.isEmpty || !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value!)) {
+                      if (value!.isEmpty || !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
                         return 'Lütfen Email Giriniz';
                       }
                       return null;

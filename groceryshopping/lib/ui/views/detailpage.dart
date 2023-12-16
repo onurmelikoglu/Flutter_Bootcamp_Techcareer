@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:groceryshopping/data/entity/kullanicilar.dart';
@@ -7,7 +7,7 @@ import 'package:groceryshopping/data/entity/yemekler.dart';
 import 'package:groceryshopping/data/repo/kullanicilar_dao_repository.dart';
 import 'package:groceryshopping/ui/cubit/bottomnavigation_cubit.dart';
 import 'package:groceryshopping/ui/cubit/detailpage_cubit.dart';
-import 'package:groceryshopping/ui/views/bottom_navigation.dart';
+//import 'package:groceryshopping/ui/views/bottom_navigation.dart';
 import 'package:groceryshopping/ui/views/loginpage.dart';
 import 'package:groceryshopping/ui/widgets/customButton.dart';
 import 'package:groceryshopping/ui/widgets/smallText.dart';

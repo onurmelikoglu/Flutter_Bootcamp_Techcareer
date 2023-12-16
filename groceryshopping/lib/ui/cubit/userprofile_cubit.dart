@@ -9,4 +9,9 @@ class UserProfileCubit extends Cubit<void> {
   Future<void> signOut() async{
     await krepo.signOut();
   }
+
+  Future<void> saveUserData(String userid, String username, String useradress) async{
+    await krepo.saveUserData(userid, username, useradress);
+  }
+
 }

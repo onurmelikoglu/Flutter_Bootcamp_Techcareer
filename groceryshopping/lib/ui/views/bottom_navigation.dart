@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:groceryshopping/data/repo/sepet_dao_repository.dart';
 import 'package:groceryshopping/ui/cubit/bottomnavigation_cubit.dart';
+import 'package:groceryshopping/ui/views/fortunewheel.dart';
 import 'package:groceryshopping/ui/views/homepage.dart';
 import 'package:groceryshopping/ui/views/shoppingcartpage.dart';
 import 'package:groceryshopping/ui/views/userprofile.dart';
@@ -18,7 +18,12 @@ class BottomNavigation extends StatefulWidget {
 class _BottomNavigationState extends State<BottomNavigation> {
 
   int pageIndex = 0;
-  var pages = [ const HomePage(), const ShoppingCartPage(), const UserProfile() ];
+  var pages = [ 
+    const HomePage(), 
+    const ShoppingCartPage(), 
+    const FortuneWheel(),
+    const UserProfile() 
+  ];
 
   @override
   void initState() {
@@ -49,16 +54,19 @@ class _BottomNavigationState extends State<BottomNavigation> {
           child: BlocBuilder<BottomNavigationCubit,int>(
             builder: (context, sepetToplamAdet) {
               return BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
                 items: [
                   const BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "Anasayfa"),
                   BottomNavigationBarItem(
                       icon: sepetToplamAdet > 0 ? Badge(label: Text(sepetToplamAdet.toString()), child: const Icon(Icons.shopping_cart_rounded),) : const Icon(Icons.shopping_cart_rounded),label: "Sepet"),
+                  const BottomNavigationBarItem(icon: Icon(Icons.casino), label: "Rulet"),
                   const BottomNavigationBarItem(icon: Icon(Icons.person_2), label: "Hesap"),
                 ],
                 currentIndex: pageIndex,
-                backgroundColor: Colors.white,
+                //backgroundColor: Colors.white,
                 selectedItemColor: primaryColor,
-                //unselectedItemColor: Colors.white38,
+                unselectedItemColor: lightColor,
+                unselectedLabelStyle: TextStyle(color: lightColor),
                 onTap: (index){
                   setState(() {
                     pageIndex = index;
